@@ -593,12 +593,12 @@
             }
         }
 
-        // 3. FormSubmit Logic + Auto-Download Redirect
+        // 3. FormSubmit Logic - No Redirect Version
         document.getElementById('signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const form = e.target;
             const emailInput = form.querySelector('input[name="email"]').value;
-            const messageInput = form.querySelector('textarea[name="message"]').value; // Pobranie wiadomości
+            const messageInput = form.querySelector('textarea[name="message"]').value; 
             
             const btnText = document.getElementById('btn-text');
             const originalContent = btnText.innerHTML;
@@ -610,24 +610,18 @@
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     email: emailInput,
-                    message: messageInput, // Wysyłka wiadomości
+                    message: messageInput,
                     _subject: "New Quiet Power Subscriber + Message!"
                 })
             })
             .then(response => response.json())
             .then(data => {
-                // Success State
-                btnText.innerHTML = `<span class="lang-en">Downloading...</span><span class="lang-pl hidden">Pobieranie...</span>`;
+                // Success State - No Redirect
+                btnText.innerHTML = `<span class="lang-en">Thanks! We'll be in touch.</span><span class="lang-pl hidden">Dzięki! Będziemy w kontakcie.</span>`;
                 const currentLang = document.documentElement.lang || 'en';
                 switchLang(currentLang);
                 
                 form.reset();
-
-                // AUTO-REDIRECT TO PDF (Instant Gratification)
-                // Upewnij się, że plik nazywa się dokładnie tak samo w repozytorium
-                setTimeout(() => {
-                    window.location.href = 'rozdzial1.pdf'; 
-                }, 1500); // 1.5s opóźnienia dla UX
             })
             .catch(error => {
                 console.error(error);
