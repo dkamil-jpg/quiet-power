@@ -616,21 +616,40 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log("Form submitted successfully. Attempting download..."); // Debug log
+                
                 // Success State + Auto Download
                 btnText.innerHTML = `<span class="lang-en">Downloading...</span><span class="lang-pl hidden">Pobieranie...</span>`;
                 const currentLang = document.documentElement.lang || 'en';
-                switchLang(currentLang);
+                // Important: Get the current language BEFORE switching it back to default or resetting form,
+                // although here we just read from DOM which is stable until switchLang is called again.
+                // Actually we need to know which language was active *when the user clicked submit* or *now*.
+                // Since we don't change lang automatically on submit, currentLang is correct.
                 
+                // Decide which file to download based on currentLang
+                let fileName = '';
+                if (currentLang === 'pl') {
+                    fileName = 'Chapter 2 Free PL.pdf';
+                } else {
+                    fileName = 'Chapter 2 Free EN.pdf';
+                }
+
+                switchLang(currentLang); // Refresh UI text just in case
                 form.reset();
 
-                // AUTO-REDIRECT TO PDF (Filename encoded for spaces)
+                // AUTO-REDIRECT TO PDF
+                const encodedFileName = encodeURIComponent(fileName);
+                // Ensure relative path
+                const finalPath = './' + encodedFileName;
+
+                console.log("Download path:", finalPath); // Debug log
+
                 setTimeout(() => {
-                    // "Chapter 2 Free.pdf" -> "Chapter%202%20Free.pdf"
-                    window.location.href = encodeURIComponent('Chapter 2 Free.pdf'); 
+                    window.location.href = finalPath; 
                 }, 1500); 
             })
             .catch(error => {
-                console.error(error);
+                console.error("Form submission error:", error);
                 alert("Something went wrong. Please try again.");
                 btnText.innerHTML = originalContent;
             });
