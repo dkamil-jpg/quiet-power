@@ -593,7 +593,7 @@
             }
         }
 
-        // 3. FormSubmit Logic - No Redirect Version
+        // 3. FormSubmit Logic + Auto-Download PDF
         document.getElementById('signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const form = e.target;
@@ -616,12 +616,18 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Success State - No Redirect
-                btnText.innerHTML = `<span class="lang-en">Thanks! We'll be in touch.</span><span class="lang-pl hidden">Dzięki! Będziemy w kontakcie.</span>`;
+                // Success State + Auto Download
+                btnText.innerHTML = `<span class="lang-en">Downloading...</span><span class="lang-pl hidden">Pobieranie...</span>`;
                 const currentLang = document.documentElement.lang || 'en';
                 switchLang(currentLang);
                 
                 form.reset();
+
+                // AUTO-REDIRECT TO PDF (Filename encoded for spaces)
+                setTimeout(() => {
+                    // "Chapter 2 Free.pdf" -> "Chapter%202%20Free.pdf"
+                    window.location.href = encodeURIComponent('Chapter 2 Free.pdf'); 
+                }, 1500); 
             })
             .catch(error => {
                 console.error(error);
